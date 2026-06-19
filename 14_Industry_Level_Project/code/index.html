@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Codeaura AI Assistant</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f9; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .chat-container { background: white; width: 400px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); padding: 20px; }
+        .chat-box { height: 300px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; border-radius: 5px; margin-bottom: 10px; background: #fafafa; }
+        .user-msg { text-align: right; color: blue; margin-bottom: 5px; }
+        .ai-msg { text-align: left; color: green; margin-bottom: 5px; }
+        input { width: 75%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
+        button { width: 20%; padding: 10px; background: #007BFF; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+
+<div class="chat-container">
+    <h2 style="text-align: center; color: #333;">Codeaura AI 🤖</h2>
+    <div class="chat-box" id="chat-box">
+        <div class="ai-msg"><strong>AI:</strong> Hi! I am ready to help.</div>
+    </div>
+    <div>
+        <input type="text" id="user-input" placeholder="Type a message...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+</div>
+
+<script>
+    async function sendMessage() {
+        const inputField = document.getElementById("user-input");
+        const chatBox = document.getElementById("chat-box");
+        const text = inputField.value;
+        if (!text) return;
+
+        // Show user message
+        chatBox.innerHTML += `<div class="user-msg"><strong>You:</strong> ${text}</div>`;
+        inputField.value = "";
+
+        // Send to FastAPI Backend
+        const response = await fetch("/api/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ user_text: text })
+        });
+        const data = await response.json();
+
+        // Show AI message
+        chatBox.innerHTML += `<div class="ai-msg"><strong>AI:</strong> ${data.reply}</div>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+</script>
+
+</body>
+</html>
